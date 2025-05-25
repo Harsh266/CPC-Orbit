@@ -39,12 +39,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Update the register function to handle detailed errors
   const register = async (userData) => {
     try {
       const response = await axios.post('/auth/register', userData);
       return response.data;
     } catch (error) {
-      throw error.response?.data || { message: 'Registration failed' };
+      if (error.response && error.response.data) {
+        throw error.response.data;
+      } else {
+        throw { message: 'Registration failed' };
+      }
     }
   };
 

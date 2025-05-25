@@ -36,7 +36,10 @@ mongoose.connect(process.env.MONGO_URL)
     });
   })
   .catch((err) => {
-    console.error('MongoDB connection error:', err);
+    console.error('MongoDB connection error details:', err.message);
+    if (err.name === 'MongoServerSelectionError') {
+      console.error('Could not connect to MongoDB. Check your connection string and network.');
+    }
     process.exit(1);
   });
 
