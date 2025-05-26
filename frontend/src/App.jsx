@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import StudentDashboard from './pages/StudentDashboard';
 import FacultyDashboard from './pages/FacultyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import CollegeDashboard from './pages/CollegeDashboard';
 import { useAuth } from './context/AuthContext';
 
 function PrivateRoute({ children, allowedRoles }) {
@@ -44,12 +45,19 @@ function App() {
                 <FacultyDashboard />
               </PrivateRoute>
             }
-          />
-          <Route
+          />          <Route
             path="/admin-dashboard"
             element={
               <PrivateRoute allowedRoles={['admin']}>
                 <AdminDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/college-dashboard/:collegeId"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <CollegeDashboard />
               </PrivateRoute>
             }
           />
