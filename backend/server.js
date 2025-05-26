@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
-
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -27,6 +27,7 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes); // Use admin routes
 
 // MongoDB connection with error handling
 mongoose.connect(process.env.MONGO_URL)

@@ -12,6 +12,16 @@ function AdminDashboard() {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [users, setUsers] = useState([]);
   
+  // New states for college management
+  const [colleges, setColleges] = useState([]);
+  const [showCollegeModal, setShowCollegeModal] = useState(false);
+  const [collegeData, setCollegeData] = useState({
+    name: '',
+    code: '',
+  });
+  const [editingCollege, setEditingCollege] = useState(null);
+  const [selectedCollege, setSelectedCollege] = useState(null);
+  
   // Form states
   const [studentData, setStudentData] = useState({
     name: '',
@@ -132,6 +142,114 @@ function AdminDashboard() {
     }
   };
 
+  // Fetch colleges when Manage Colleges tab is active
+  useEffect(() => {
+    if (activeTab === 'manageColleges') {
+      fetchColleges();
+    }
+  }, [activeTab]);
+
+  const fetchColleges = async () => {
+    try {
+      setIsLoading(true);
+      // Replace with your actual API endpoint for fetching colleges
+      const res = await api.get('/admin/colleges');
+      setColleges(res.data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Failed to fetch colleges:", err);
+      setColleges([]);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle college form input changes
+  const handleCollegeChange = (e) => {
+    const { name, value } = e.target;
+    setCollegeData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Add new college
+  const handleAddCollege = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      if (editingCollege) {
+        // Update existing college
+        await api.put(`/admin/colleges/${editingCollege._id}`, collegeData);
+        setMessage({ text: 'College updated successfully', type: 'success' });
+      } else {
+        // Add new college
+        await api.post('/admin/colleges', collegeData);
+        setMessage({ text: 'College added successfully', type: 'success' });
+      }
+      
+      // Reset form and refetch colleges
+      setCollegeData({
+        name: '',
+        code: '',
+      });
+      setEditingCollege(null);
+      setShowCollegeModal(false);
+      fetchColleges();
+    } catch (error) {
+      setMessage({ 
+        text: error.response?.data?.message || 'Failed to save college', 
+        type: 'error' 
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Edit college
+  const handleEditCollege = (college) => {
+    setCollegeData({
+      name: college.name || '',
+      code: college.code || '',
+      address: college.address || '',
+      city: college.city || '',
+      state: college.state || '',
+      contactPerson: college.contactPerson || '',
+      contactEmail: college.contactEmail || '',
+      contactPhone: college.contactPhone || '',
+    });
+    setEditingCollege(college);
+    setShowCollegeModal(true);
+  };
+
+  // Delete college
+  const handleDeleteCollege = async (collegeId) => {
+    if (window.confirm('Are you sure you want to delete this college?')) {
+      try {
+        setIsLoading(true);
+        await api.delete(`/admin/colleges/${collegeId}`);
+        setMessage({ text: 'College deleted successfully', type: 'success' });
+        fetchColleges();
+      } catch (error) {
+        setMessage({ 
+          text: error.response?.data?.message || 'Failed to delete college', 
+          type: 'error' 
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  // Open college dashboard
+  const openCollegeDashboard = (college) => {
+    setSelectedCollege(college);
+    setActiveTab('collegeDashboard');
+  };
+
+  // Back to colleges list
+  const backToColleges = () => {
+    setSelectedCollege(null);
+    setActiveTab('manageColleges');
+  };
+
   // Handle input changes
   const handleStudentChange = (e) => {
     const { name, value } = e.target;
@@ -167,7 +285,7 @@ function AdminDashboard() {
 
         {/* Tab Navigation */}
         <div className="bg-white shadow-md rounded-lg mb-6">
-          <nav className="flex border-b">
+          <nav className="flex border-b overflow-x-auto">
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`px-6 py-4 text-sm font-medium ${
@@ -187,6 +305,16 @@ function AdminDashboard() {
               }`}
             >
               Manage Users
+            </button>
+            <button
+              onClick={() => setActiveTab('manageColleges')}
+              className={`px-6 py-4 text-sm font-medium ${
+                activeTab === 'manageColleges' || activeTab === 'collegeDashboard'
+                  ? 'border-b-2 border-indigo-500 text-indigo-600'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              Manage Colleges
             </button>
             <button
               onClick={() => setActiveTab('reports')}
@@ -275,6 +403,157 @@ function AdminDashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Manage Colleges Tab */}
+          {activeTab === 'manageColleges' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-semibold text-gray-800">Manage Colleges</h2>
+                <button
+                  onClick={() => {
+                    setEditingCollege(null);
+                    setCollegeData({
+                      name: '',
+                      code: '',
+                      address: '',
+                      city: '',
+                      state: '',
+                      contactPerson: '',
+                      contactEmail: '',
+                      contactPhone: '',
+                    });
+                    setShowCollegeModal(true);
+                  }}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+                >
+                  Add New College
+                </button>
+              </div>
+              
+              {/* Message display */}
+              {message.text && (
+                <div className={`p-4 rounded ${
+                  message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+                }`}>
+                  {message.text}
+                </div>
+              )}
+              
+              {/* College listing */}
+              {isLoading ? (
+                <div className="flex justify-center p-8">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {colleges.length === 0 ? (
+                    <div className="col-span-full text-center py-8 text-gray-500">
+                      No colleges found. Add a new college to get started.
+                    </div>
+                  ) : (
+                    colleges.map((college) => (
+                      <div 
+                        key={college._id} 
+                        className="bg-white border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition"
+                      >
+                        <div 
+                          onClick={() => openCollegeDashboard(college)}
+                          className="p-5 cursor-pointer"
+                        >
+                          <h3 className="text-lg font-semibold text-gray-800">{college.name}</h3>
+                          <p className="text-sm text-gray-600 mt-1">Code: {college.code}</p>
+                        </div>
+                        <div className="bg-gray-50 px-5 py-3 flex justify-end space-x-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditCollege(college);
+                            }}
+                            className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteCollege(college._id);
+                            }}
+                            className="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* College Dashboard Tab */}
+          {activeTab === 'collegeDashboard' && selectedCollege && (
+            <div className="space-y-6">
+              <div className="flex items-center">
+                <button
+                  onClick={backToColleges}
+                  className="mr-3 p-2 rounded-full hover:bg-gray-200"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <h2 className="text-2xl font-semibold text-gray-800">{selectedCollege.name} Dashboard</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                  <h3 className="font-semibold text-blue-800">Total Students</h3>
+                  <div className="text-3xl font-bold text-blue-600">0</div>
+                </div>
+                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+                  <h3 className="font-semibold text-green-800">Total Faculty</h3>
+                  <div className="text-3xl font-bold text-green-600">0</div>
+                </div>
+                <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                  <h3 className="font-semibold text-purple-800">Active Projects</h3>
+                  <div className="text-3xl font-bold text-purple-600">0</div>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">College Details</h3>
+                <div className="bg-gray-50 p-5 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-sm text-gray-500">College Code</p>
+                      <p className="font-medium">{selectedCollege.code}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Location</p>
+                      <p className="font-medium">{selectedCollege.city}, {selectedCollege.state}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Contact Person</p>
+                      <p className="font-medium">{selectedCollege.contactPerson || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Contact Email</p>
+                      <p className="font-medium">{selectedCollege.contactEmail || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Contact Phone</p>
+                      <p className="font-medium">{selectedCollege.contactPhone || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Address</p>
+                      <p className="font-medium">{selectedCollege.address || 'Not specified'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -552,6 +831,64 @@ function AdminDashboard() {
               <div className="mt-4 text-sm text-gray-500">
                 <p>Note: Default password for new accounts is "123456"</p>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit College Modal */}
+      {showCollegeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-semibold text-gray-800">
+                  {editingCollege ? 'Edit College' : 'Add New College'}
+                </h3>
+                <button 
+                  onClick={() => setShowCollegeModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Simplified College Form */}
+              <form onSubmit={handleAddCollege} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">College Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={collegeData.name}
+                    onChange={handleCollegeChange}
+                    required
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">College Code</label>
+                  <input
+                    type="text"
+                    name="code"
+                    value={collegeData.code}
+                    onChange={handleCollegeChange}
+                    required
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  {isLoading ? 'Saving...' : (editingCollege ? 'Update College' : 'Add College')}
+                </button>
+              </form>
             </div>
           </div>
         </div>
