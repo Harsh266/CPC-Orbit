@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import adminRoutes from './routes/adminRoutes.js';
+import collegeRoutes from './routes/collegeRoutes.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 
 // Use your admin routes
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/colleges', collegeRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
