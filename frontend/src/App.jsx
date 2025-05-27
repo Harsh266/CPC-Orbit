@@ -15,6 +15,7 @@ import TimeSlot from './pages/admin/TimeSlot';
 import Attendance from './pages/admin/Attendance';
 import PaymentVoucher from './pages/admin/PaymentVoucher';
 import AttendanceReport from './pages/admin/AttendanceReport';
+import CollegeDetails from './pages/admin/CollegeDetails';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/admin/attendance" element={<Attendance />} />
         <Route path="/admin/payment-voucher" element={<PaymentVoucher />} />
         <Route path="/admin/attendance-report" element={<AttendanceReport />} />
+        <Route path="/admin/colleges/:id" element={<CollegeDetails />} />
       </Routes>
     </Router>
   );

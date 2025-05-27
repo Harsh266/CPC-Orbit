@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
-import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaEye } from 'react-icons/fa';
 
 const Colleges = () => {
   const [colleges, setColleges] = useState([]);
@@ -189,10 +189,13 @@ const Colleges = () => {
               <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
                 {error}
               </div>
-            )}
-
-            {/* Colleges Table */}
+            )}            {/* Colleges Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="bg-blue-50 px-6 py-3 border-b border-blue-200">
+                <p className="text-sm text-blue-700">
+                  💡 Click on any college row to view details and manage departments
+                </p>
+              </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -218,11 +221,16 @@ const Colleges = () => {
                           {searchTerm ? 'No colleges found matching your search.' : 'No colleges available. Add your first college!'}
                         </td>
                       </tr>
-                    ) : (
-                      filteredColleges.map((college) => (
-                        <tr key={college._id} className="hover:bg-gray-50">
+                    ) : (                      filteredColleges.map((college) => (
+                        <tr 
+                          key={college._id} 
+                          className="hover:bg-gray-50 cursor-pointer"
+                          onClick={() => navigate(`/admin/colleges/${college._id}`)}
+                        >
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{college.name}</div>
+                            <div className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                              {college.name}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900 font-mono">{college.code}</div>
@@ -235,14 +243,30 @@ const Colleges = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => handleEdit(college)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/admin/colleges/${college._id}`);
+                                }}
+                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors"
+                                title="View College Details"
+                              >
+                                <FaEye />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(college);
+                                }}
                                 className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors"
                                 title="Edit College"
                               >
                                 <FaEdit />
                               </button>
                               <button
-                                onClick={() => handleDelete(college._id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(college._id);
+                                }}
                                 className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors"
                                 title="Delete College"
                               >
