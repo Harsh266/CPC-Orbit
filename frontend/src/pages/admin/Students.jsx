@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
+import Sidebar from '../../components/Sidebar';
+import Navbar from '../../components/Navbar';
 
-const AdminDashboard = () => {
+
+const Students = () => {
 
   return (
     <div className="flex min-h-screen">
@@ -13,11 +14,11 @@ const AdminDashboard = () => {
       <div className="flex-1 flex flex-col">
         <Navbar />
         <main className="flex-1 p-8 bg-gray-100">
-          <p>Welcome to the admin dashboard</p>
+          <h2>Students</h2>
         </main>
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default Students;
