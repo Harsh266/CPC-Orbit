@@ -16,6 +16,7 @@ import Attendance from './pages/admin/Attendance';
 import PaymentVoucher from './pages/admin/PaymentVoucher';
 import AttendanceReport from './pages/admin/AttendanceReport';
 import CollegeDetails from './pages/admin/CollegeDetails';
+import DepartmentDetails from './pages/admin/DepartmentDetails';
 
 function App() {
   return (
@@ -40,10 +41,10 @@ function App() {
         <Route path="/admin/subject-allocation" element={<SubjectAllocation />} />
         <Route path="/admin/students" element={<Students />} />
         <Route path="/admin/time-slot" element={<TimeSlot />} />
-        <Route path="/admin/attendance" element={<Attendance />} />
-        <Route path="/admin/payment-voucher" element={<PaymentVoucher />} />
+        <Route path="/admin/attendance" element={<Attendance />} />        <Route path="/admin/payment-voucher" element={<PaymentVoucher />} />
         <Route path="/admin/attendance-report" element={<AttendanceReport />} />
         <Route path="/admin/colleges/:id" element={<CollegeDetails />} />
+        <Route path="/admin/colleges/:collegeId/departments/:departmentId" element={<DepartmentDetails />} />
       </Routes>
     </Router>
   );

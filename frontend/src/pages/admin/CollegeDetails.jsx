@@ -301,8 +301,7 @@ const CollegeDetails = () => {
                         </td>
                       </tr>
                     ) : (
-                      filteredDepartments.map((department) => (
-                        <tr key={department._id} className="hover:bg-gray-50">
+                      filteredDepartments.map((department) => (                        <tr key={department._id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/admin/colleges/${collegeId}/departments/${department._id}`)}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">{department.name}</div>
                           </td>
@@ -328,7 +327,7 @@ const CollegeDetails = () => {
                               {new Date(department.createdAt).toLocaleDateString()}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                             <div className="flex space-x-2">
                               <button
                                 onClick={() => handleEdit(department)}

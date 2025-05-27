@@ -37,7 +37,8 @@ export const getDepartmentsByCollege = async (req, res) => {
 // Get department by ID
 export const getDepartmentById = async (req, res) => {
   try {
-    const department = await Department.findById(req.params.id)
+    const { departmentId } = req.params;
+    const department = await Department.findById(departmentId)
       .populate('college', 'name code');
     
     if (!department) {

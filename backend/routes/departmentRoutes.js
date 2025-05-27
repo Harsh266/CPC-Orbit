@@ -17,8 +17,8 @@ router.use(adminAuth);
 // GET /api/admin/colleges/:collegeId/departments - Get all departments for a college
 router.get('/:collegeId/departments', getDepartmentsByCollege);
 
-// GET /api/admin/departments/:id - Get department by ID
-router.get('/departments/:id', getDepartmentById);
+// GET /api/admin/colleges/:collegeId/departments/:departmentId - Get department by ID
+router.get('/:collegeId/departments/:departmentId', getDepartmentById);
 
 // POST /api/admin/colleges/:collegeId/departments - Create new department
 router.post('/:collegeId/departments', createDepartment);
