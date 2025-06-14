@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api'; // Adjust the import based on your project structure
 
 const AdminLogin = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -9,7 +10,7 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/admin/login', form);
+      const res = await api.post('/login', form);
       sessionStorage.setItem('adminToken', res.data.token);
       navigate('/admin/dashboard');
     } catch (err) {

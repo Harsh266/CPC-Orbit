@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
+import api from '../services/api'; // Adjust the import based on your project structure
 
 const Navbar = () => {
   const [adminInfo, setAdminInfo] = useState({ name: '', email: '' });
@@ -12,7 +13,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchAdminInfo = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/admin/dashboard', {
+        const res = await api.get('/dashboard', {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem('adminToken')}`,
           },
