@@ -7,6 +7,8 @@ import PrivateRoute from './pages/PrivateRoute';
 import ManageCoordinator from './pages/admin/ManageCoordinator';
 import Users from './pages/admin/Users';
 import Colleges from './pages/admin/Colleges';
+import CollegeDetails from './pages/admin/CollegeDetails';
+import ProgramDetail from './pages/admin/ProgramDetail';
 import Programs from './pages/admin/Programs';
 import Subjects from './pages/admin/Subjects';
 import SubjectAllocation from './pages/admin/SubjectAllocation';
@@ -31,9 +33,10 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/admin/manage-coordinator" element={<ManageCoordinator />} />
-        <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/manage-coordinator" element={<ManageCoordinator />} />        <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/colleges" element={<Colleges />} />
+        <Route path="/admin/colleges/:id" element={<CollegeDetails />} />
+        <Route path="/admin/programs/:programId" element={<ProgramDetail />} />
         <Route path="/admin/programs" element={<Programs />} />
         <Route path="/admin/subjects" element={<Subjects />} />
         <Route path="/admin/subject-allocation" element={<SubjectAllocation />} />
