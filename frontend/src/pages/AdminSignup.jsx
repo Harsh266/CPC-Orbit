@@ -10,7 +10,7 @@ const AdminSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/signup', form);
+      const res = await api.post('/admin/signup', form);
       sessionStorage.setItem('adminToken', res.data.token);
       navigate('/admin/dashboard');
     } catch (err) {

@@ -13,7 +13,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchAdminInfo = async () => {
       try {
-        const res = await api.get('/dashboard', {
+        const res = await api.get('/admin/dashboard', {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem('adminToken')}`,
           },
